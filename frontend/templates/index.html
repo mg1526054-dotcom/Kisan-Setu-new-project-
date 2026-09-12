@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>KisanSetu — Crop Price Intelligence &amp; Market Discovery</title>
+
+<!-- Google Fonts (Fraunces + Inter) with offline fallback built into CSS -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Vendored Chart.js for 100% offline capability -->
+<script src="/static/vendor/chart.umd.js"></script>
+<link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+
+<div class="bg-pattern" aria-hidden="true"></div>
+
+<!-- Topbar Navigation -->
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-icon-box">
+        <svg class="brand-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2a10 10 0 0 1 10 10c0 5.523-4.477 10-10 10S2 17.523 2 12A10 10 0 0 1 12 2z"/>
+          <path d="M12 6v12M8 10l4-4 4 4M8 14l4 4 4-4"/>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <span class="brand-name">KisanSetu</span>
+        <span class="brand-badge">SIH26132</span>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <span class="status-indicator"><span class="status-dot"></span> Model Active</span>
+      <span class="brand-tag">Strengthening Market Linkages &amp; Price Discovery</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- Hero Banner -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="eyebrow-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        <span>SIH26132 · AI-POWERED MANDI INTELLIGENCE</span>
+      </div>
+      <h1>Know the price<br><span class="highlight-text">before you sell.</span></h1>
+      <p class="hero-sub">Select your crop and mandi. KisanSetu combines historical arrival volume, seasonal trends, and weather signals into an explainable, quantile-bounded price range.</p>
+      
+      <div class="hero-stats">
+        <div class="hero-stat-item">
+          <span class="stat-num">95%+</span>
+          <span class="stat-desc">Range Coverage</span>
+        </div>
+        <div class="hero-stat-divider"></div>
+        <div class="hero-stat-item">
+          <span class="stat-num">3-Layer</span>
+          <span class="stat-desc">Quantile ML Engine</span>
+        </div>
+        <div class="hero-stat-divider"></div>
+        <div class="hero-stat-item">
+          <span class="stat-num">AGMARKNET</span>
+          <span class="stat-desc">Mandi Data Linked</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Selectors Bar -->
+  <section class="panel selectors-panel" aria-label="Forecast controls">
+    <div class="selector-grid">
+      <div class="field">
+        <label for="crop-select">
+          <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+          Crop
+        </label>
+        <div class="select-wrapper">
+          <select id="crop-select"></select>
+          <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="market-select">
+          <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+            <circle cx="12" cy="10" r="3"/>
+          </svg>
+          Market (Mandi)
+        </label>
+        <div class="select-wrapper">
+          <select id="market-select"></select>
+          <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="date-select">
+          <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+          Target Week
+        </label>
+        <input type="date" id="date-select" />
+      </div>
+
+      <div class="field field-btn">
+        <label>&nbsp;</label>
+        <button id="forecast-btn" class="btn-primary">
+          <span class="btn-text">Get forecast</span>
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Skeleton Loading State -->
+  <section id="skeleton-loader" class="skeleton-container hidden" aria-hidden="true">
+    <div class="skeleton-card skeleton-main">
+      <div class="skeleton-line skeleton-head"></div>
+      <div class="skeleton-line skeleton-title"></div>
+      <div class="skeleton-line skeleton-price"></div>
+    </div>
+    <div class="skeleton-card skeleton-chart"></div>
+    <div class="skeleton-card skeleton-drivers"></div>
+  </section>
+
+  <!-- Forecast Results -->
+  <section id="result-section" class="result hidden">
+    
+    <!-- Primary Forecast Card -->
+    <div class="panel forecast-card">
+      <div class="forecast-card-bg-glow"></div>
+      
+      <div class="forecast-card-head">
+        <div class="risk-badge-wrapper">
+          <span class="tag" id="risk-tag">
+            <svg class="tag-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            Risk: —
+          </span>
+        </div>
+
+        <!-- Confidence Gauge Component -->
+        <div class="confidence-container" id="confidence-container">
+          <div class="confidence-header">
+            <span class="confidence-label-title">Model Confidence</span>
+            <span class="confidence-val" id="confidence-text">Confidence —%</span>
+          </div>
+          <div class="confidence-gauge-bar">
+            <div class="confidence-gauge-fill" id="confidence-gauge-fill" style="width: 0%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="forecast-body">
+        <p class="forecast-label" id="forecast-label">Predicted price for —</p>
+        <h2 class="forecast-range" id="forecast-range">
+          <span class="currency-symbol">₹</span><span id="predicted-min-val">—</span>
+          <span class="range-separator">–</span>
+          <span class="currency-symbol">₹</span><span id="predicted-max-val">—</span>
+          <span class="unit">/ quintal</span>
+        </h2>
+      </div>
+
+      <div class="advisory-box" id="advisory-box">
+        <div class="advisory-icon-wrapper">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+        </div>
+        <p class="advisory" id="advisory-text">—</p>
+      </div>
+    </div>
+
+    <!-- Interactive Price Chart Card -->
+    <div class="panel chart-card">
+      <div class="card-header">
+        <div class="card-title-group">
+          <div class="icon-bubble">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+              <polyline points="17 6 23 6 23 12"></polyline>
+            </svg>
+          </div>
+          <h3>Price &amp; Arrivals History</h3>
+        </div>
+        <span class="chart-subtitle">52-Week Mandi Trend</span>
+      </div>
+      <div class="chart-wrapper">
+        <canvas id="price-chart" height="240"></canvas>
+      </div>
+    </div>
+
+    <!-- Explainability / Drivers Card -->
+    <div class="panel drivers-card">
+      <div class="card-header">
+        <div class="card-title-group">
+          <div class="icon-bubble gold-bubble">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+          </div>
+          <h3>Why This Forecast?</h3>
+        </div>
+        <span class="card-badge-pill">SHAP Factors</span>
+      </div>
+      <ul id="drivers-list" class="drivers-list"></ul>
+    </div>
+
+    <!-- Walk-Forward Model Metrics Card -->
+    <div class="panel metrics-card">
+      <div class="card-header">
+        <div class="card-title-group">
+          <div class="icon-bubble moss-bubble">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+          </div>
+          <h3>Model Validation Performance</h3>
+        </div>
+        <span class="card-badge-pill">Out-of-sample</span>
+      </div>
+      <div id="metrics-grid" class="metrics-grid"></div>
+      <div class="disclaimer-footer">
+        <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="16" x2="12" y2="12"></line>
+          <line x1="12" y1="8" x2="12.01" y2="8"></line>
+        </svg>
+        <p class="disclaimer" id="disclaimer-text"></p>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- Empty Default State -->
+  <section id="empty-state" class="empty-state">
+    <div class="empty-illustration">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M3 3v18h18"/>
+        <path d="M18 17V9"/>
+        <path d="M13 17V5"/>
+        <path d="M8 17v-3"/>
+      </svg>
+    </div>
+    <h3>Ready for Market Analysis</h3>
+    <p>Select a target crop and mandi above, then click <strong>Get forecast</strong> to reveal quantum price boundaries, drivers, and history.</p>
+  </section>
+
+  <!-- Error State -->
+  <section id="error-state" class="error-state hidden"></section>
+
+</main>
+
+<!-- Footer -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <span class="brand-name">KisanSetu</span> — AI Crop Price Intelligence
+    </div>
+    <p>Designed for SIH26132. Demo dataset is synthetically aligned with AGMARKNET &amp; IMD feeds.</p>
+  </div>
+</footer>
+
+<script src="/static/script.js"></script>
+</body>
+</html>
