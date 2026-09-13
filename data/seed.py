@@ -28,6 +28,16 @@ MARKETS = [
     {"name": "Nagpur Market", "district": "Nagpur", "lat": 21.1458, "lon": 79.0882},
     {"name": "Solapur Mandi", "district": "Solapur", "lat": 17.6599, "lon": 75.9064},
     {"name": "Aurangabad APMC", "district": "Chhatrapati Sambhajinagar", "lat": 19.8762, "lon": 75.3433},
+    {"name": "Mumbai APMC (Vashi)", "district": "Thane", "lat": 19.0760, "lon": 72.9981},
+    {"name": "Kolhapur APMC", "district": "Kolhapur", "lat": 16.7050, "lon": 74.2433},
+    {"name": "Amravati Mandi", "district": "Amravati", "lat": 20.9374, "lon": 77.7796},
+    {"name": "Latur APMC", "district": "Latur", "lat": 18.4088, "lon": 76.5604},
+    {"name": "Jalgaon APMC", "district": "Jalgaon", "lat": 21.0077, "lon": 75.5626},
+    {"name": "Ahmednagar Mandi", "district": "Ahmednagar", "lat": 19.0948, "lon": 74.7480},
+    {"name": "Nanded APMC", "district": "Nanded", "lat": 19.1383, "lon": 77.3210},
+    {"name": "Akola APMC", "district": "Akola", "lat": 20.7002, "lon": 77.0082},
+    {"name": "Satara Mandi", "district": "Satara", "lat": 17.6805, "lon": 74.0183},
+    {"name": "Sangli APMC", "district": "Sangli", "lat": 16.8524, "lon": 74.5815},
 ]
 
 # base_price: typical modal price (Rs/quintal); vol: relative volatility;
@@ -38,6 +48,18 @@ CROPS = [
     {"name": "Tomato", "base_price": 1400, "vol": 0.35, "season_peak_week": 15},
     {"name": "Soybean", "base_price": 4200, "vol": 0.12, "season_peak_week": 45},
     {"name": "Cotton", "base_price": 6800, "vol": 0.10, "season_peak_week": 48},
+    {"name": "Wheat", "base_price": 2200, "vol": 0.08, "season_peak_week": 20},
+    {"name": "Rice (Paddy)", "base_price": 2100, "vol": 0.09, "season_peak_week": 42},
+    {"name": "Maize", "base_price": 1850, "vol": 0.14, "season_peak_week": 38},
+    {"name": "Sugarcane", "base_price": 315, "vol": 0.05, "season_peak_week": 50},
+    {"name": "Tur (Arhar)", "base_price": 7200, "vol": 0.15, "season_peak_week": 10},
+    {"name": "Gram (Chana)", "base_price": 5300, "vol": 0.11, "season_peak_week": 18},
+    {"name": "Groundnut", "base_price": 6100, "vol": 0.13, "season_peak_week": 44},
+    {"name": "Mustard", "base_price": 5450, "vol": 0.12, "season_peak_week": 14},
+    {"name": "Turmeric", "base_price": 13500, "vol": 0.22, "season_peak_week": 22},
+    {"name": "Garlic", "base_price": 9500, "vol": 0.32, "season_peak_week": 28},
+    {"name": "Ginger", "base_price": 7800, "vol": 0.28, "season_peak_week": 35},
+    {"name": "Green Chili", "base_price": 3200, "vol": 0.30, "season_peak_week": 25},
 ]
 
 START_DATE = date(2023, 1, 1)
