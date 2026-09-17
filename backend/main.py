@@ -119,7 +119,7 @@ def post_forecast(req: ForecastRequest, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Unknown crop_id or market_id.")
 
     try:
-        result = compute_forecast(req.crop_id, req.market_id, req.target_date)
+        result = compute_forecast(req.crop_id, req.market_id, req.target_date, req.geopolitical_scenario or "normal")
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -141,7 +141,10 @@ def post_forecast(req: ForecastRequest, db: Session = Depends(get_db)):
         predicted_min=result["predicted_min"], predicted_max=result["predicted_max"],
         predicted_median=result["predicted_median"], confidence=result["confidence"],
         risk_level=result["risk_level"], drivers=result["drivers"],
-        advisory=result["advisory"], model_metrics=result["model_metrics"],
+        advisory=result["advisory"],
+        geopolitical_scenario=result.get("geopolitical_scenario", "normal"),
+        geopolitical_note=result.get("geopolitical_note"),
+        model_metrics=result["model_metrics"],
     )
 
 

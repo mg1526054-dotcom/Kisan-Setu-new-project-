@@ -60,7 +60,7 @@ def generate_advisory(predicted_min, predicted_max, historical_recent_mean, risk
     return "Prices look broadly stable near the recent average — timing is flexible."
 
 
-def compute_forecast(crop_id: int, market_id: int, target_date: date = None):
+def compute_forecast(crop_id: int, market_id: int, target_date: date = None, geopolitical_scenario: str = "normal"):
     if target_date is None:
         target_date = date.today() + timedelta(days=7)
 
@@ -81,6 +81,26 @@ def compute_forecast(crop_id: int, market_id: int, target_date: date = None):
     confidence = confidence_from_range(low_pred, high_pred, vol)
     risk = risk_level_from_confidence(confidence)
 
+    # Apply Geopolitical / War Disruption Scenario Multipliers & Shifts
+    geopolitical_note = None
+    if geopolitical_scenario == "elevated_tension":
+        median_pred *= 1.15
+        low_pred = median_pred * 0.88
+        high_pred = median_pred * 1.25
+        confidence = round(max(0.35, confidence - 0.15), 2)
+        if risk == "Low":
+            risk = "Medium"
+        elif risk == "Medium":
+            risk = "High"
+        geopolitical_note = "⚡ Elevated Tension Scenario: Price baseline shifted upward (+15%) with wider uncertainty bounds (+25%) reflecting regional tensions and supply friction."
+    elif geopolitical_scenario == "active_disruption":
+        median_pred *= 1.35
+        low_pred = median_pred * 0.78
+        high_pred = median_pred * 1.48
+        confidence = round(max(0.20, confidence - 0.30), 2)
+        risk = "High"
+        geopolitical_note = "🚨 Active War Disruption Scenario: Major trade route shock (+35% price shift) and volatile range bounds (+48%) applied due to global supply disruption."
+
     drivers = top_drivers(median_model, last_row, FEATURE_COLS, top_n=3)
     recent_mean = float(feats_history["modal_price"].tail(8).mean())
     advisory = generate_advisory(low_pred, high_pred, recent_mean, risk)
@@ -94,5 +114,7 @@ def compute_forecast(crop_id: int, market_id: int, target_date: date = None):
         "risk_level": risk,
         "drivers": drivers,
         "advisory": advisory,
+        "geopolitical_scenario": geopolitical_scenario,
+        "geopolitical_note": geopolitical_note,
         "model_metrics": metrics,
     }

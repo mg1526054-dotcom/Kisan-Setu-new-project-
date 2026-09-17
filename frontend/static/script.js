@@ -1,21 +1,74 @@
 const cropSelect = document.getElementById("crop-select");
 const marketSelect = document.getElementById("market-select");
 const dateInput = document.getElementById("date-select");
+const scenarioSelect = document.getElementById("scenario-select");
 const forecastBtn = document.getElementById("forecast-btn");
 const resultSection = document.getElementById("result-section");
-const skeletonLoader = document.getElementById("skeleton-loader");
 const emptyState = document.getElementById("empty-state");
 const errorState = document.getElementById("error-state");
+const mobileNavToggle = document.getElementById("mobile-nav-toggle");
+const navMenu = document.getElementById("nav-menu");
 
 let priceChart = null;
 
+// Set default target date to 7 days in future
 function defaultTargetDate() {
   const d = new Date();
   d.setDate(d.getDate() + 7);
   return d.toISOString().slice(0, 10);
 }
-dateInput.value = defaultTargetDate();
+if (dateInput) dateInput.value = defaultTargetDate();
 
+// Mobile Navigation Toggle
+if (mobileNavToggle && navMenu) {
+  mobileNavToggle.addEventListener("click", () => {
+    navMenu.classList.toggle("open");
+  });
+}
+
+// Active Navigation Underline & Scrollspy Handler
+const navLinks = document.querySelectorAll(".nav-link");
+
+function setActiveNavLink(targetId) {
+  navLinks.forEach(link => {
+    if (link.getAttribute("href") === targetId) {
+      link.classList.add("active");
+    } else {
+      link.classList.remove("active");
+    }
+  });
+}
+
+navLinks.forEach(link => {
+  link.addEventListener("click", (e) => {
+    const targetId = link.getAttribute("href");
+    if (targetId && targetId.startsWith("#")) {
+      setActiveNavLink(targetId);
+      if (navMenu) navMenu.classList.remove("open");
+    }
+  });
+});
+
+// Detect Section Scrolling
+const sections = document.querySelectorAll("section[id]");
+window.addEventListener("scroll", () => {
+  let currentSectionId = "#hero";
+  const scrollPosition = window.scrollY + 140;
+
+  sections.forEach(section => {
+    const sectionTop = section.offsetTop;
+    const sectionHeight = section.offsetHeight;
+    if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+      currentSectionId = "#" + section.getAttribute("id");
+    }
+  });
+
+  if (currentSectionId) {
+    setActiveNavLink(currentSectionId);
+  }
+});
+
+// Fetch helper with error handling
 async function fetchJSON(url, options) {
   const res = await fetch(url, options);
   if (!res.ok) {
@@ -45,7 +98,6 @@ function showError(message) {
   errorState.textContent = message;
   errorState.classList.remove("hidden");
   resultSection.classList.add("hidden");
-  if (skeletonLoader) skeletonLoader.classList.add("hidden");
   emptyState.classList.add("hidden");
 }
 
@@ -56,7 +108,6 @@ function animateNumber(elementId, start, end, duration = 800) {
   const step = (timestamp) => {
     if (!startTimestamp) startTimestamp = timestamp;
     const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-    // Ease out cubic
     const easeProgress = 1 - Math.pow(1 - progress, 3);
     const value = Math.floor(easeProgress * (end - start) + start);
     obj.textContent = value.toLocaleString();
@@ -71,6 +122,7 @@ function animateNumber(elementId, start, end, duration = 800) {
 
 function renderDrivers(drivers) {
   const list = document.getElementById("drivers-list");
+  if (!list) return;
   
   const upIcon = `
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -97,13 +149,14 @@ function renderDrivers(drivers) {
 
 function renderMetrics(metrics) {
   const grid = document.getElementById("metrics-grid");
+  if (!grid) return;
   const items = [
     { label: "Model MAE", value: `₹${metrics.model_mae}` },
     { label: "Model MAPE", value: `${metrics.model_mape_pct}%` },
-    { label: "Range coverage", value: `${metrics.range_coverage_pct}%` },
+    { label: "Range Coverage", value: `${metrics.range_coverage_pct}%` },
     { label: "Baseline MAE", value: `₹${metrics.baseline_mae}` },
     { label: "Baseline MAPE", value: `${metrics.baseline_mape_pct}%` },
-    { label: "Test samples", value: metrics.n_test },
+    { label: "Test Samples", value: metrics.n_test },
   ];
   grid.innerHTML = items.map(i => `
     <div class="metric-box">
@@ -115,20 +168,20 @@ function renderMetrics(metrics) {
 
 async function renderChart(cropId, marketId) {
   const history = await fetchJSON(`/api/history?crop_id=${cropId}&market_id=${marketId}`);
-  const recent = history.slice(-52); // last ~1 year of weekly data
+  const recent = history.slice(-52);
   const labels = recent.map(h => h.date);
   const modal = recent.map(h => h.modal_price);
   const min = recent.map(h => h.min_price);
   const max = recent.map(h => h.max_price);
 
   const canvas = document.getElementById("price-chart");
+  if (!canvas) return;
   const ctx = canvas.getContext("2d");
 
-  // Create smooth visual gradients
-  const gradientModal = ctx.createLinearGradient(0, 0, 0, 240);
-  gradientModal.addColorStop(0, "rgba(44, 95, 45, 0.35)");
-  gradientModal.addColorStop(0.8, "rgba(44, 95, 45, 0.02)");
-  gradientModal.addColorStop(1, "rgba(44, 95, 45, 0.0)");
+  const gradientModal = ctx.createLinearGradient(0, 0, 0, 260);
+  gradientModal.addColorStop(0, "rgba(44, 110, 73, 0.32)");
+  gradientModal.addColorStop(0.8, "rgba(44, 110, 73, 0.03)");
+  gradientModal.addColorStop(1, "rgba(44, 110, 73, 0.0)");
 
   if (priceChart) priceChart.destroy();
   
@@ -140,21 +193,21 @@ async function renderChart(cropId, marketId) {
         {
           label: "Modal Price",
           data: modal,
-          borderColor: "#2C5F2D",
+          borderColor: "#2C6E49",
           borderWidth: 2.5,
           backgroundColor: gradientModal,
           fill: true,
           tension: 0.35,
           pointRadius: 0,
           pointHoverRadius: 6,
-          pointHoverBackgroundColor: "#2C5F2D",
+          pointHoverBackgroundColor: "#2C6E49",
           pointHoverBorderColor: "#FFFFFF",
           pointHoverBorderWidth: 2
         },
         {
           label: "Daily High",
           data: max,
-          borderColor: "#E29930",
+          borderColor: "#D97706",
           borderWidth: 1.5,
           borderDash: [4, 4],
           pointRadius: 0,
@@ -163,7 +216,7 @@ async function renderChart(cropId, marketId) {
         {
           label: "Daily Low",
           data: min,
-          borderColor: "#85AC49",
+          borderColor: "#84C59E",
           borderWidth: 1.5,
           borderDash: [4, 4],
           pointRadius: 0,
@@ -191,12 +244,11 @@ async function renderChart(cropId, marketId) {
           }
         },
         tooltip: {
-          backgroundColor: "#122B14",
+          backgroundColor: "#19382C",
           titleFont: { family: "'Inter', sans-serif", size: 13, weight: "700" },
           bodyFont: { family: "'Inter', sans-serif", size: 12 },
           padding: 12,
           cornerRadius: 8,
-          boxPadding: 4,
           callbacks: {
             label: function(context) {
               let label = context.dataset.label || '';
@@ -212,14 +264,14 @@ async function renderChart(cropId, marketId) {
       scales: {
         x: {
           grid: { display: false },
-          ticks: { maxTicksLimit: 8, font: { family: "'Inter', sans-serif", size: 11 }, color: "#5A695D" }
+          ticks: { maxTicksLimit: 8, font: { family: "'Inter', sans-serif", size: 11 }, color: "#6B7C70" }
         },
         y: {
-          grid: { color: "rgba(0, 0, 0, 0.04)" },
+          grid: { color: "rgba(0, 0, 0, 0.05)" },
           ticks: {
             callback: v => `₹${v.toLocaleString()}`,
             font: { family: "'Inter', sans-serif", size: 11 },
-            color: "#5A695D"
+            color: "#6B7C70"
           }
         },
       },
@@ -231,7 +283,6 @@ async function getForecast() {
   errorState.classList.add("hidden");
   emptyState.classList.add("hidden");
   resultSection.classList.add("hidden");
-  if (skeletonLoader) skeletonLoader.classList.remove("hidden");
 
   forecastBtn.disabled = true;
   forecastBtn.innerHTML = `
@@ -245,24 +296,33 @@ async function getForecast() {
     const cropId = parseInt(cropSelect.value, 10);
     const marketId = parseInt(marketSelect.value, 10);
     const targetDate = dateInput.value;
+    const scenario = scenarioSelect ? scenarioSelect.value : "normal";
 
     const forecast = await fetchJSON("/api/forecast", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ crop_id: cropId, market_id: marketId, target_date: targetDate }),
+      body: JSON.stringify({
+        crop_id: cropId,
+        market_id: marketId,
+        target_date: targetDate,
+        geopolitical_scenario: scenario
+      }),
     });
 
     // Update Risk Badge
     const riskTag = document.getElementById("risk-tag");
-    riskTag.innerHTML = `
-      <svg class="tag-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-      </svg>
-      Risk: ${forecast.risk_level}`;
+    if (riskTag) {
+      riskTag.innerHTML = `
+        <svg class="tag-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        Risk: ${forecast.risk_level}`;
+    }
 
     // Update Confidence Gauge Bar
     const confPct = Math.round(forecast.confidence * 100);
-    document.getElementById("confidence-text").textContent = `Confidence ${confPct}%`;
+    const confText = document.getElementById("confidence-text");
+    if (confText) confText.textContent = `Confidence ${confPct}%`;
     const confFill = document.getElementById("confidence-gauge-fill");
     if (confFill) confFill.style.width = `${confPct}%`;
 
@@ -272,19 +332,29 @@ async function getForecast() {
     document.getElementById("advisory-text").textContent = forecast.advisory;
     document.getElementById("disclaimer-text").textContent = forecast.disclaimer;
 
+    // Render Geopolitical Disruption Note if present
+    const geoBox = document.getElementById("geopolitical-box");
+    const geoText = document.getElementById("geopolitical-text");
+    if (forecast.geopolitical_note) {
+      if (geoText) geoText.textContent = forecast.geopolitical_note;
+      if (geoBox) geoBox.classList.remove("hidden");
+    } else {
+      if (geoBox) geoBox.classList.add("hidden");
+    }
+
     // Render Drivers & Metrics
     renderDrivers(forecast.drivers);
     renderMetrics(forecast.model_metrics);
 
-    // Hide Skeleton & Reveal Results
-    if (skeletonLoader) skeletonLoader.classList.add("hidden");
+    // Reveal Results Section
     resultSection.classList.remove("hidden");
+    resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-    // Animate Number Count-Up for predicted price range
+    // Animate Count-Up for predicted price range
     animateNumber("predicted-min-val", 0, forecast.predicted_min);
     animateNumber("predicted-max-val", 0, forecast.predicted_max);
 
-    // Render smooth gradient chart
+    // Render 52-week price trend chart
     await renderChart(cropId, marketId);
 
   } catch (err) {

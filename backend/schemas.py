@@ -31,6 +31,7 @@ class ForecastRequest(BaseModel):
     crop_id: int
     market_id: int
     target_date: Optional[date] = None  # defaults to "today + 7 days" if omitted
+    geopolitical_scenario: Optional[str] = "normal"
 
 
 class DriverOut(BaseModel):
@@ -52,5 +53,8 @@ class ForecastResponse(BaseModel):
     risk_level: str
     drivers: List[DriverOut]
     advisory: str
+    geopolitical_scenario: str = "normal"
+    geopolitical_note: Optional[str] = None
     model_metrics: dict
     disclaimer: str = "Illustrative forecast from a demo model trained on synthetic data — validate against live AGMARKNET/e-NAM data before real-world use."
+
